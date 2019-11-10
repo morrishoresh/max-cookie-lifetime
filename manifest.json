@@ -1,0 +1,25 @@
+{
+  "name": "Cookie Max Lifetime",
+  "author": "Morris Horesh",
+  "version": "1.0",
+  "description": "Limit cookie lifetime",
+  "manifest_version": 2,
+  "permissions": [
+    "<all_urls>", "cookies", "storage", "activeTab"
+  ],
+  
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+
+  "options_ui": {
+    "page": "options.html"
+  },
+
+  "icons": {
+    "48": "48.png",
+    "96": "96.png"
+  }
+
+}
