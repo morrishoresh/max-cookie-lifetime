@@ -15,11 +15,5 @@
 
   "options_ui": {
     "page": "options.html"
-  },
-
-  "icons": {
-    "48": "48.png",
-    "96": "96.png"
   }
-
 }

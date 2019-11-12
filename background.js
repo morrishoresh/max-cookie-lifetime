@@ -39,22 +39,23 @@ chrome.cookies.onChanged.addListener(
     let now = Date.now();
     let newExpiration = Math.round(now/1000) + maxLifetime;
     
-    if(cookie.expirationDate && cookie.expirationDate > 0 && cookie.expirationDate < newExpiration)
+    if(cookie.expirationDate && cookie.expirationDate > 0 && cookie.expirationDate <= newExpiration)
         return;
-
-    let newCookie = {
-      url: ["http", (cookie.secure ? "s:\/\/" : ":\/\/"), cookie.domain.replace(/^\./, ""), cookie.path].join(""),
-      name: cookie.name,
-      value: cookie.value,
-      secure: cookie.secure,
-      httpOnly: cookie.httpOnly,
-      storeId: cookie.storeId,
-      domain: cookie.domain,
+    
+    var newCookie = cookie.constructor();
+    for (var attr in cookie) {
+        if (attr === "hostOnly" || attr === "session")
+            continue;
+        if (attr === "domain" && !cookie.domain.startsWith("."))
+            continue;
         
-      sameSite: cookie.sameSite,
-      expirationDate: newExpiration
-    };
-      
+        newCookie[attr] = cookie[attr];
+    }
+    
+    newCookie.expirationDate = newExpiration;
+    newCookie.url = ["http", (cookie.secure ? "s:\/\/" : ":\/\/"), cookie.domain.replace(/^\./, ""), cookie.path].join("");      
+    console.log("cookie url: "+ newCookie.url);  
+  
     chrome.cookies.set(newCookie, function() {
     });
   }
