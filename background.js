@@ -1,28 +1,43 @@
 "use strict";
 
-var maxLifetime = 7*24*60*60;
+var settings = {};
 
-function getOptions(){
-
-  function onError(error) {
-    console.log(`Error: ${error}`);
-  }
-  
-  function onGot(item) {
-    if (item.maxLifetime)
-      maxLifetime = item.maxLifetime * 60 * 60;  
-  }
-  
-  var getting = browser.storage.local.get("maxLifetime");
-  getting.then(onGot, onError);
+function applySettings(data) {
+  settings = data;
+  if (!settings.maxLifetime)
+    settings.maxLifetime = 7 * 24 * 60 * 60;
+        
+  if (!settings.exceptions)
+    setting.exceptions = [];
+        
 }
 
+function loadSettings()
+{
+  browser.storage.local.get(data => {
+    applySettings(data);
+  });
+}
 
-chrome.storage.onChanged.addListener(getOptions);
-getOptions();
+loadSettings();
+
+browser.storage.onChanged.addListener(changeData => {
+  loadSettings();
+});
+
 
 chrome.cookies.onChanged.addListener(
   ({removed, cookie, cause}) => {
+
+    for (var i = 0; i < settings.exceptions.length; i++){
+      var e = settings.exceptions[i].trim();
+      if (!e)
+        continue;
+
+      if (cookie.domain.includes(e)){
+	return;
+      }
+    }
 
     if(removed) return;
       
@@ -35,9 +50,9 @@ chrome.cookies.onChanged.addListener(
       
     if (cookie.session)
         return;
-    
+
     let now = Date.now();
-    let newExpiration = Math.round(now/1000) + maxLifetime;
+    let newExpiration = Math.round(now/1000) + settings.maxLifetime;
     
     if(cookie.expirationDate && cookie.expirationDate > 0 && cookie.expirationDate <= newExpiration)
         return;
