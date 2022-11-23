@@ -1,21 +1,24 @@
 function saveOptions(e) {
   e.preventDefault();
+
   browser.storage.local.set({
-    maxLifetime: document.querySelector("#maxLifetime").value
+    maxLifetime: document.querySelector("#maxLifetime").value,
+    exceptions: document.querySelector("#exceptions").value.split("\n")
   });
 }
 
 function restoreOptions() {
-  function setCurrentChoice(result) {
-    document.querySelector("#maxLifetime").value = result.maxLifetime || "168";
+  function setCurrentChoice(storageSettings) {
+    document.querySelector("#maxLifetime").value = storageSettings.maxLifetime || "168";
+    document.querySelector("#exceptions").value = storageSettings.exceptions.join("\n") || "";
   }
 
   function onError(error) {
     console.log(`Error: ${error}`);
   }
 
-  var getting = browser.storage.local.get("maxLifetime");
-  getting.then(setCurrentChoice, onError);
+  var storageSettings = browser.storage.local.get();
+  storageSettings.then(setCurrentChoice, onError);
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);

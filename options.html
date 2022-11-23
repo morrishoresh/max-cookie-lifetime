@@ -8,13 +8,23 @@
     </title>            
   </head>     
   <body>            
-    <form>               
-      <label>Max cookie lifetime in hours         
-        <input type="number" id="maxLifetime">      
-      </label>               
-      <button type="submit">Save       
-      </button>         
+    <form>
+      <div style="border: none;margin: 3%; line-height: 1.4;font-size: 20px;">
+	<p>               
+            <div>Max cookie lifetime in hours:</div>         
+            <input type="number" id="maxLifetime">
+        </p>
+
+        <p>      
+            <div>Exceptions:</div>
+            <textarea type="text" id="exceptions" cols="50" rows="5"></textarea>
+        </p>
+
+        <p>
+            <button type="submit">Save</button>
+        </p>
+      </div>         
     </form>
-<script src="options.js"></script>     
+    <script src="options.js"></script>     
   </body>
 </html>
