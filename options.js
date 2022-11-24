@@ -3,7 +3,7 @@ function saveOptions(e) {
 
   browser.storage.local.set({
     maxLifetime: document.querySelector("#maxLifetime").value,
-    exceptions: document.querySelector("#exceptions").value.split("\n")
+    exceptions: document.querySelector("#exceptions").value.trim().split(/\s+/)
   });
 }
 
