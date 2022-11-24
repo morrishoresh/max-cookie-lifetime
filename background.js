@@ -7,11 +7,12 @@ var settings =
 };
 
 function applySettings(data) {
+
   if (data.maxLifetime)
     settings.maxLifetime = data.maxLifetime; 	
         
   if (data.exceptions)
-    setting.exceptions = data.exceptions;
+    settings.exceptions = data.exceptions;
         
 }
 

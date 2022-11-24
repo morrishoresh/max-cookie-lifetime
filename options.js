@@ -9,8 +9,11 @@ function saveOptions(e) {
 
 function restoreOptions() {
   function setCurrentChoice(storageSettings) {
+    
     document.querySelector("#maxLifetime").value = storageSettings.maxLifetime || "168";
-    document.querySelector("#exceptions").value = storageSettings.exceptions.join("\n") || "";
+
+    if (storageSettings.exception)
+        document.querySelector("#exceptions").value = storageSettings.exceptions.join("\n") || "";
   }
 
   function onError(error) {
