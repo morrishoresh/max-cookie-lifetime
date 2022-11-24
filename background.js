@@ -1,14 +1,17 @@
 "use strict";
 
-var settings = {};
+var settings = 
+{
+  maxLifetime: 7 * 24,
+  exceptions: {}
+};
 
 function applySettings(data) {
-  settings = data;
-  if (!settings.maxLifetime)
-    settings.maxLifetime = 7 * 24 * 60 * 60;
+  if (data.maxLifetime)
+    settings.maxLifetime = data.maxLifetime; 	
         
-  if (!settings.exceptions)
-    setting.exceptions = [];
+  if (data.exceptions)
+    setting.exceptions = data.exceptions;
         
 }
 
@@ -31,6 +34,7 @@ chrome.cookies.onChanged.addListener(
 
     for (var i = 0; i < settings.exceptions.length; i++){
       var e = settings.exceptions[i].trim();
+
       if (!e)
         continue;
 
@@ -52,8 +56,8 @@ chrome.cookies.onChanged.addListener(
         return;
 
     let now = Date.now();
-    let newExpiration = Math.round(now/1000) + settings.maxLifetime;
-    
+    let newExpiration = Math.round(now/1000) + (settings.maxLifetime * 60 * 60);
+
     if(cookie.expirationDate && cookie.expirationDate > 0 && cookie.expirationDate <= newExpiration)
         return;
     
@@ -69,7 +73,6 @@ chrome.cookies.onChanged.addListener(
     
     newCookie.expirationDate = newExpiration;
     newCookie.url = ["http", (cookie.secure ? "s:\/\/" : ":\/\/"), cookie.domain.replace(/^\./, ""), cookie.path].join("");      
-    console.log("cookie url: "+ newCookie.url);  
   
     chrome.cookies.set(newCookie, function() {
     });
