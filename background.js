@@ -79,3 +79,36 @@ chrome.cookies.onChanged.addListener(
     });
   }
 );
+
+let openTabs = new Set();
+
+browser.tabs.onCreated.addListener(tab => {
+    openTabs.add(tab.id);
+});
+
+browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
+    openTabs.delete(tabId);
+    
+    // Wait briefly to ensure all events are processed
+    setTimeout(() => {
+        browser.tabs.query({}).then(tabs => {
+            if (tabs.length === 0) {
+                // All tabs are closed (note: may not fire on macOS)
+                cleanupSessionCookies();
+            }
+        });
+    }, 100);
+});
+
+function cleanupSessionCookies() {
+    browser.cookies.getAll({}).then(cookies => {
+        for (let cookie of cookies) {
+            if (!cookie.expirationDate) {
+                browser.cookies.remove({
+                    url: `${cookie.secure ? "https" : "http"}://${cookie.domain.replace(/^\./, '')}${cookie.path}`,
+                    name: cookie.name
+                });
+            }
+        }
+    });
+}
