@@ -2,15 +2,18 @@
 
 var settings = {
   maxLifetime: 7 * 24,
-  exceptions: {},
+  exceptions: [],
 };
 
 function applySettings(data) {
   if (data.maxLifetime) {
     settings.maxLifetime = data.maxLifetime;
   }
-  if (data.exceptions) {
+
+  if (Array.isArray(data.exceptions)) {
     settings.exceptions = data.exceptions;
+  } else {
+    settings.exceptions = [];
   }
 }
 
@@ -42,7 +45,7 @@ browser.storage.onChanged.addListener((changeData) => {
   loadSettings();
 });
 
-chrome.cookies.onChanged.addListener(({ removed, cookie, cause }) => {
+browser.cookies.onChanged.addListener(({ removed, cookie, cause }) => {
   if (removed) return;
 
   if (isProtected(cookie)) return;
@@ -66,7 +69,7 @@ chrome.cookies.onChanged.addListener(({ removed, cookie, cause }) => {
   )
     return;
 
-  var newCookie = cookie.constructor();
+  var newCookie = {};
   for (var attr in cookie) {
     if (attr === "hostOnly" || attr === "session") continue;
     if (attr === "domain" && !cookie.domain.startsWith(".")) continue;
@@ -77,12 +80,12 @@ chrome.cookies.onChanged.addListener(({ removed, cookie, cause }) => {
   newCookie.expirationDate = newExpiration;
   newCookie.url = [
     "http",
-    cookie.secure ? "s:\/\/" : ":\/\/",
+    cookie.secure ? "s://" : "://",
     cookie.domain.replace(/^\./, ""),
     cookie.path,
   ].join("");
 
-  chrome.cookies.set(newCookie, function () {});
+  browser.cookies.set(newCookie);
 });
 
 let openTabs = new Set();
@@ -90,6 +93,7 @@ let openTabs = new Set();
 browser.tabs.onCreated.addListener((tab) => {
   openTabs.add(tab.id);
 });
+
 browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
   openTabs.delete(tabId);
 
@@ -121,4 +125,3 @@ function cleanupSessionCookies() {
     }
   });
 }
-
