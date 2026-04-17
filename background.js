@@ -6,24 +6,11 @@ var settings = {
 };
 
 function applySettings(data) {
-  if (data.maxLifetime) {
-    settings.maxLifetime = data.maxLifetime;
-  }
-
-  if (Array.isArray(data.exceptions)) {
-    settings.exceptions = data.exceptions;
-  } else {
-    settings.exceptions = [];
-  }
+  settings.maxLifetime = Number(data.maxLifetime) || 7 * 24;
+  settings.exceptions = Array.isArray(data.exceptions) ? data.exceptions : [];
 }
 
-function loadSettings() {
-  browser.storage.local.get((data) => {
-    applySettings(data);
-  });
-}
-
-loadSettings();
+let settingsReady = browser.storage.local.get().then(applySettings);
 
 function isProtected(cookie) {
   for (var i = 0; i < settings.exceptions.length; i++) {
@@ -41,11 +28,13 @@ function isProtected(cookie) {
   return false;
 }
 
-browser.storage.onChanged.addListener((changeData) => {
-  loadSettings();
+browser.storage.onChanged.addListener(() => {
+  settingsReady = browser.storage.local.get().then(applySettings);
 });
 
-browser.cookies.onChanged.addListener(({ removed, cookie, cause }) => {
+browser.cookies.onChanged.addListener(async ({ removed, cookie, cause }) => {
+  await settingsReady;
+
   if (removed) return;
 
   if (isProtected(cookie)) return;
@@ -88,40 +77,3 @@ browser.cookies.onChanged.addListener(({ removed, cookie, cause }) => {
   browser.cookies.set(newCookie);
 });
 
-let openTabs = new Set();
-
-browser.tabs.onCreated.addListener((tab) => {
-  openTabs.add(tab.id);
-});
-
-browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  openTabs.delete(tabId);
-
-  // Wait briefly to ensure all events are processed
-  setTimeout(() => {
-    browser.tabs.query({}).then((tabs) => {
-      if (tabs.length === 0) {
-        // All tabs are closed (note: may not fire on macOS)
-        cleanupSessionCookies();
-      }
-    });
-  }, 100);
-});
-
-function cleanupSessionCookies() {
-  browser.cookies.getAll({}).then((cookies) => {
-    for (let cookie of cookies) {
-      if (cookie.expirationDate) {
-        continue;
-      }
-      if (isProtected(cookie)) {
-        continue;
-      }
-
-      browser.cookies.remove({
-        url: `${cookie.secure ? "https" : "http"}://${cookie.domain.replace(/^\./, "")}${cookie.path}`,
-        name: cookie.name,
-      });
-    }
-  });
-}

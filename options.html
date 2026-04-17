@@ -1,30 +1,44 @@
 <!doctype html>
-<html>        
-  <head>              
-    <meta charset="utf-8">        
-  </head>     
-  <head>            
-    <title>Cookie max lifetime          
-    </title>            
-  </head>     
-  <body>            
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Cookie max lifetime</title>
+    <style>
+      body {
+        min-width: 420px;
+        padding: 16px;
+      }
+      div.field-label {
+        margin-bottom: 4px;
+      }
+      input[type="number"] {
+        width: 120px;
+      }
+    </style>
+  </head>
+  <body>
     <form>
-      <div style="border: none;margin: 3%; line-height: 1.4;font-size: 20px;">
-	<p>               
-            <div>Max cookie lifetime in hours:</div>         
-            <input type="number" id="maxLifetime">
-        </p>
-
-        <p>      
-            <div>Exceptions:</div>
-            <textarea type="text" id="exceptions" cols="50" rows="5"></textarea>
+      <div style="line-height: 1.4; font-size: 20px;">
+        <p>
+          <div class="field-label">Max cookie lifetime in hours:</div>
+          <input type="number" id="maxLifetime">
         </p>
 
         <p>
-            <button type="submit">Save</button>
+          <div class="field-label">Exceptions:</div>
+          <textarea id="exceptions" cols="50" rows="5"></textarea>
         </p>
-      </div>         
+
+        <p>
+          <div class="field-label">Local storage exceptions:</div>
+          <textarea id="localStorageExceptions" cols="50" rows="5"></textarea>
+        </p>
+
+        <p>
+          <button type="submit" id="saveButton" disabled>Save</button>
+        </p>
+      </div>
     </form>
-    <script src="options.js"></script>     
+    <script src="options.js"></script>
   </body>
 </html>
