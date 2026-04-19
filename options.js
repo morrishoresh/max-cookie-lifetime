@@ -4,6 +4,7 @@ function currentState() {
   return {
     maxLifetime: document.querySelector("#maxLifetime").value,
     exceptions: document.querySelector("#exceptions").value,
+    localStorageMaxLifetime: document.querySelector("#localStorageMaxLifetime").value,
     localStorageExceptions: document.querySelector("#localStorageExceptions").value,
   };
 }
@@ -29,6 +30,7 @@ function saveOptions(e) {
   browser.storage.local.set({
     maxLifetime: document.querySelector("#maxLifetime").value,
     exceptions: splitList(document.querySelector("#exceptions").value),
+    localStorageMaxLifetime: document.querySelector("#localStorageMaxLifetime").value,
     localStorageExceptions: splitList(document.querySelector("#localStorageExceptions").value)
   });
 
@@ -39,6 +41,7 @@ function saveOptions(e) {
 function restoreOptions() {
   function setCurrentChoice(storageSettings) {
     document.querySelector("#maxLifetime").value = storageSettings.maxLifetime || "168";
+    document.querySelector("#localStorageMaxLifetime").value = storageSettings.localStorageMaxLifetime || "24";
 
     if (storageSettings.exceptions)
       document.querySelector("#exceptions").value = storageSettings.exceptions.join("\n");
@@ -61,4 +64,5 @@ document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);
 document.querySelector("#maxLifetime").addEventListener("input", updateSaveButton);
 document.querySelector("#exceptions").addEventListener("input", updateSaveButton);
+document.querySelector("#localStorageMaxLifetime").addEventListener("input", updateSaveButton);
 document.querySelector("#localStorageExceptions").addEventListener("input", updateSaveButton);
