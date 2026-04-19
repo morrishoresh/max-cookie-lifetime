@@ -14,6 +14,7 @@ function hasChanges() {
   return (
     current.maxLifetime !== savedState.maxLifetime ||
     current.exceptions !== savedState.exceptions ||
+    current.localStorageMaxLifetime !== savedState.localStorageMaxLifetime ||
     current.localStorageExceptions !== savedState.localStorageExceptions
   );
 }
