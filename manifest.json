@@ -18,6 +18,12 @@
       "run_at": "document_start"
     }
   ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{fddcd4e2-ecd1-43d6-b750-57bff6e65bdf}"
+    }
+  },
+
   "options_ui": {
     "page": "options.html"
   }
