@@ -1,5 +1,9 @@
 "use strict";
 
+browser.action.onClicked.addListener(() => {
+  browser.runtime.openOptionsPage();
+});
+
 var settings = {
   maxLifetime: 7 * 24,
   exceptions: [],
