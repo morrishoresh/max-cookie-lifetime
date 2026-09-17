@@ -28,7 +28,7 @@ function saveOptions(e) {
 
   const splitList = (value) => value.trim() ? value.trim().split(/\s+/) : [];
 
-  browser.storage.local.set({
+  browser.storage.sync.set({
     maxLifetime: document.querySelector("#maxLifetime").value,
     exceptions: splitList(document.querySelector("#exceptions").value),
     localStorageMaxLifetime: document.querySelector("#localStorageMaxLifetime").value,
@@ -58,7 +58,7 @@ function restoreOptions() {
     console.log(`Error: ${error}`);
   }
 
-  browser.storage.local.get().then(setCurrentChoice, onError);
+  browser.storage.sync.get().then(setCurrentChoice, onError);
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
