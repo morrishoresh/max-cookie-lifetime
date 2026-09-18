@@ -14,30 +14,7 @@ function applySettings(data) {
   settings.exceptions = Array.isArray(data.exceptions) ? data.exceptions : [];
 }
 
-const LOCAL_SETTINGS_KEYS = [
-  "maxLifetime",
-  "exceptions",
-  "localStorageMaxLifetime",
-  "localStorageExceptions",
-];
-
-async function migrateLocalToSync() {
-  try {
-    const syncData = await browser.storage.sync.get();
-    if (Object.keys(syncData).length > 0) return;
-
-    const localData = await browser.storage.local.get(LOCAL_SETTINGS_KEYS);
-    if (Object.keys(localData).length === 0) return;
-
-    await browser.storage.sync.set(localData);
-  } catch (error) {
-    console.log(`Migration error: ${error}`);
-  }
-}
-
-let settingsReady = migrateLocalToSync()
-  .then(() => browser.storage.sync.get())
-  .then(applySettings);
+let settingsReady = browser.storage.sync.get().then(applySettings);
 
 function isProtected(cookie) {
   for (var i = 0; i < settings.exceptions.length; i++) {
@@ -103,4 +80,3 @@ browser.cookies.onChanged.addListener(async ({ removed, cookie, cause }) => {
 
   browser.cookies.set(newCookie);
 });
-
